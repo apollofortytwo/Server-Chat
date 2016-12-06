@@ -11,12 +11,16 @@ import java.awt.event.ActionListener;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.Inet4Address;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class Chat_Server extends JFrame {
 
@@ -68,6 +72,12 @@ public class Chat_Server extends JFrame {
 
 	public Chat_Server() {
 		setup();
+		try {
+			System.out.println(Inet4Address.getLocalHost().getHostAddress());
+		} catch (UnknownHostException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
 
 	public void setup() {
@@ -115,17 +125,31 @@ public class Chat_Server extends JFrame {
 
 		msg_send.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				String msgout = "";
-				System.out.println(msg_input.getText().trim());
-				msgout = msg_input.getText().trim();
-				msg_area.setText(msg_area.getText().trim() + "\n" + msgout);
-
-				try {
-					dout.writeUTF(msgout);
-				} catch (IOException e) {
-					e.printStackTrace();
+				send();
+			}
+		});
+		msg_input.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+				System.out.println(arg0);
+				if (arg0.getKeyCode() == 10) {
+					System.out.println("pressed");
+					send();
 				}
 			}
 		});
+	}
+
+	private void send() {
+		String msgout = "";
+		System.out.println(msg_input.getText().trim());
+		msgout = msg_input.getText().trim();
+		msg_area.setText(msg_area.getText().trim() + "\n" + msgout);
+		msg_input.setText("");
+		try {
+			dout.writeUTF(msgout);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
