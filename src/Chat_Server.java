@@ -27,7 +27,7 @@ public class Chat_Server extends JFrame {
 	private JPanel contentPane;
 	private TextField msg_input;
 	private Button msg_send;
-	private static TextComponent msg_area;
+	protected static TextComponent msg_area;
 
 	/**
 	 * Launch the application.
@@ -69,11 +69,12 @@ public class Chat_Server extends JFrame {
 	static Socket s;
 	static DataOutputStream dout;
 	static DataInputStream din;
-
+	static String ip;
+	
 	public Chat_Server() {
 		setup();
 		try {
-			System.out.println(Inet4Address.getLocalHost().getHostAddress());
+			ip = Inet4Address.getLocalHost().getHostAddress();
 		} catch (UnknownHostException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -131,9 +132,7 @@ public class Chat_Server extends JFrame {
 		msg_input.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent arg0) {
-				System.out.println(arg0);
 				if (arg0.getKeyCode() == 10) {
-					System.out.println("pressed");
 					send();
 				}
 			}
@@ -144,10 +143,10 @@ public class Chat_Server extends JFrame {
 		String msgout = "";
 		System.out.println(msg_input.getText().trim());
 		msgout = msg_input.getText().trim();
-		msg_area.setText(msg_area.getText().trim() + "\n" + msgout);
+		msg_area.setText(msg_area.getText().trim() + "\n" + ip + ": "+ msgout);
 		msg_input.setText("");
 		try {
-			dout.writeUTF(msgout);
+			dout.writeUTF(ip + ": " + msgout);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
